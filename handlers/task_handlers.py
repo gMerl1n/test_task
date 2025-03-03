@@ -36,3 +36,15 @@ async def get_task_by_id(task_id: int,
         raise HTTPException(status_code=404, detail=f"Task with id {task_id} has not been found")
 
     return task
+
+
+@router_tasks.get("/")
+async def get_all_tasks(task_service: ITaskServices = Depends(di_container.get_task_service),
+                        async_session: AsyncSession = Depends(get_async_session)):
+
+    tasks = await task_service.get_all_tasks(async_session=async_session)
+
+    if tasks is None:
+        raise HTTPException(status_code=404, detail="Tasks have not been found")
+
+    return tasks

@@ -63,7 +63,28 @@ class TaskRepository(ITaskRepository):
         )
 
     async def get_all_tasks(self, async_session: AsyncSession) -> list[TaskEntity] | None:
-        pass
+
+        result: list[TaskEntity] = []
+
+        query = select(Task)
+        tasks = await async_session.execute(query)
+
+        if tasks is None:
+            logging.warning(f"Tasks do not exist")
+            return
+
+        for task in tasks.scalars():
+            result.append(
+                TaskEntity(
+                    task_id=task.task_id,
+                    title=task.title,
+                    description=task.description,
+                    updated_at=int(task.updated_at.timestamp()),
+                    created_at=int(task.created_at.timestamp()),
+                )
+            )
+
+        return result
 
     async def create_task(self, async_session: AsyncSession, task: TaskEntity):
 

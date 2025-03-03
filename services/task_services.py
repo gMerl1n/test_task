@@ -44,7 +44,8 @@ class TaskService(ITaskServices):
         return task
 
     async def get_all_tasks(self, async_session: AsyncSession) -> list[TaskEntity] | None:
-        pass
+        tasks = await self.__task_repo.get_all_tasks(async_session=async_session)
+        return tasks
 
     async def create_task(self, async_session: AsyncSession, title: str, description: str) -> int:
 
