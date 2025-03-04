@@ -8,7 +8,7 @@ class Task(Base):
     __tablename__ = "tasks"
 
     task_id = Column(Integer, primary_key=True, index=True, unique=True)
-    title = Column(String(255))
+    title = Column(String(255), nullable=False)
     description = Column(String(1024))
     created_at = Column(DateTime, nullable=False, default=datetime.timestamp)
     updated_at = Column(DateTime, nullable=False, default=datetime.timestamp)

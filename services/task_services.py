@@ -1,15 +1,17 @@
+import logging
 from abc import ABC, abstractmethod
 from sqlalchemy.ext.asyncio import AsyncSession
 from domain.domain import TaskEntity
 from pytz import timezone as tz
 from datetime import datetime
 from repository.task_repository import ITaskRepository
+from settings.exceptions import InvalidTaskTitleField
 
 
 class ITaskServices(ABC):
 
     @abstractmethod
-    async def get_task_by_id(self, async_session: AsyncSession, task_id: int) -> int | None:
+    async def get_task_by_id(self, async_session: AsyncSession, task_id: int) -> TaskEntity | None:
         raise NotImplemented
 
     @abstractmethod
@@ -25,7 +27,7 @@ class ITaskServices(ABC):
                                 async_session: AsyncSession,
                                 title: str,
                                 description: str,
-                                task_id: int) -> int | None:
+                                task_id: int) -> TaskEntity | None:
         raise NotImplemented
 
     @abstractmethod
@@ -51,12 +53,17 @@ class TaskService(ITaskServices):
 
         moscow_tz = tz('Europe/Moscow')
 
-        new_task = TaskEntity(
-            title=title,
-            description=description,
-            updated_at=int(datetime.now(moscow_tz).timestamp()),
-            created_at=int(datetime.now(moscow_tz).timestamp()),
-        )
+        try:
+            new_task = TaskEntity(
+                title=title,
+                description=description,
+                updated_at=int(datetime.now(moscow_tz).timestamp()),
+                created_at=int(datetime.now(moscow_tz).timestamp()),
+            )
+
+        except InvalidTaskTitleField as ex:
+            logging.warning(f"Failed to create a new task. Invalit title filed: {ex}")
+            return
 
         new_task_id = await self.__task_repo.create_task(async_session=async_session,
                                                          task=new_task)
@@ -66,7 +73,7 @@ class TaskService(ITaskServices):
                                 async_session: AsyncSession,
                                 title: str,
                                 description: str,
-                                task_id: int) -> int | None:
+                                task_id: int) -> TaskEntity | None:
 
         updated_task_id = await self.__task_repo.update_task_by_id(async_session=async_session,
                                                                    title=title,
