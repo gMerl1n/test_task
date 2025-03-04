@@ -7,7 +7,6 @@ from sqlalchemy import select, and_, update, delete
 from repository.model import Task
 
 
-
 class ITaskRepository(ABC):
 
     @abstractmethod
