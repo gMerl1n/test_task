@@ -50,6 +50,23 @@ async def get_all_tasks(task_service: ITaskServices = Depends(di_container.get_t
     return tasks
 
 
+@router_tasks.put("/{task_id}")
+async def update_task_by_id(task_id: int,
+                            task_request: UpdateTaskRequest,
+                            task_service: ITaskServices = Depends(di_container.get_task_service),
+                            async_session: AsyncSession = Depends(get_async_session)):
+
+    updated_task = await task_service.update_task_by_id(async_session=async_session,
+                                                        title=task_request.title,
+                                                        description=task_request.description,
+                                                        task_id=task_id)
+
+    if updated_task is None:
+        raise HTTPException(status_code=404, detail=f"Task with id {task_id} has not been updated")
+
+    return updated_task
+
+
 @router_tasks.delete("/")
 async def remove_task_by_id(task_id: int,
                             task_service: ITaskServices = Depends(di_container.get_task_service),
