@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from abc import ABC, abstractmethod
 from domain.domain import TaskEntity
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,6 +27,7 @@ class ITaskRepository(ABC):
                                 async_session: AsyncSession,
                                 title: str,
                                 description: str,
+                                time_updated: int,
                                 task_id: int) -> int | None:
         raise NotImplemented
 
@@ -101,9 +103,10 @@ class TaskRepository(ITaskRepository):
                                 async_session: AsyncSession,
                                 title: str,
                                 description: str,
+                                time_updated: int,
                                 task_id: int) -> int | None:
 
-        kwargs = {"title": title, "description": description}
+        kwargs = {"title": title, "description": description, "updated_at": datetime.fromtimestamp(time_updated)}
 
         query = update(Task).where(Task.task_id == task_id).values(**kwargs).returning(Task.task_id)
 

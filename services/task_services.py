@@ -2,10 +2,10 @@ import logging
 from abc import ABC, abstractmethod
 from sqlalchemy.ext.asyncio import AsyncSession
 from domain.domain import TaskEntity
-from pytz import timezone as tz
 from datetime import datetime
 from repository.task_repository import ITaskRepository
 from settings.exceptions import InvalidTaskTitleField
+from settings.settings import config
 
 
 class ITaskServices(ABC):
@@ -51,14 +51,12 @@ class TaskService(ITaskServices):
 
     async def create_task(self, async_session: AsyncSession, title: str, description: str) -> int | None:
 
-        moscow_tz = tz('Europe/Moscow')
-
         try:
             new_task = TaskEntity(
                 title=title,
                 description=description,
-                updated_at=int(datetime.now(moscow_tz).timestamp()),
-                created_at=int(datetime.now(moscow_tz).timestamp()),
+                updated_at=int(datetime.now(config.moscow_tz).timestamp()),
+                created_at=int(datetime.now(config.moscow_tz).timestamp()),
             )
 
         except InvalidTaskTitleField as ex:
@@ -76,9 +74,12 @@ class TaskService(ITaskServices):
                                 description: str,
                                 task_id: int) -> TaskEntity | None:
 
+        time_updated = int(datetime.now(config.moscow_tz).timestamp())
+
         updated_task_id = await self.__task_repo.update_task_by_id(async_session=async_session,
                                                                    title=title,
                                                                    description=description,
+                                                                   time_updated=time_updated,
                                                                    task_id=task_id)
 
         if updated_task_id is None:

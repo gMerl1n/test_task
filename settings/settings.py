@@ -1,9 +1,12 @@
 import os
 import json
 from pydantic import BaseModel
+from pytz import timezone as tz
 from pathlib import Path
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,6 +29,7 @@ class ServerConfig(BaseModel):
 
 class Settings:
     server_config = ServerConfig(port=server_config["port"], log_level=server_config["log_level"])
+    moscow_tz = tz('Europe/Moscow')
 
 
 config = Settings()
