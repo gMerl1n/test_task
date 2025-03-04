@@ -1,6 +1,6 @@
 {
   "server": {
-    "port": 11004,
+    "port": 11022,
     "log_level": "info"
   }
 }

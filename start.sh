@@ -6,4 +6,4 @@ do
     sleep 10
 done
 cd /usr/local/task_service/cmd
-uvicorn main:app --reload --host 0.0.0.0 --port 11004
+uvicorn main:app --reload --host 0.0.0.0 --port 11022

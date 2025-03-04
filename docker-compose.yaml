@@ -4,9 +4,9 @@ services:
 
   web:
     build: .
-    container_name: test
+    container_name: new_test
     command: ['./start.sh']
     volumes:
       - ./task_db.sqlite3:/test_task/task_db.sqlite3
     ports:
-      - "11004:11004"
+      - "11022:11022"
