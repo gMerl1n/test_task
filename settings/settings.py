@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DATABASE_URL: str = f"sqlite+aiosqlite:///task_db.sqlite3"
+DATABASE_URL: str = f"sqlite+aiosqlite:///{BASE_DIR}/task_db.sqlite3"
 
 engine = create_async_engine(DATABASE_URL, echo=False, future=True)
 session_local = sessionmaker(autoflush=False, bind=engine, class_=AsyncSession)
