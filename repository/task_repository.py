@@ -5,11 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, update, delete
 from repository.model import Task
 
-logging.basicConfig(
-    format='%(asctime)s - %(message)s',
-    datefmt='%d-%b-%y %H:%M:%S',
-    level=logging.INFO
-)
 
 
 class ITaskRepository(ABC):
@@ -74,7 +69,13 @@ class TaskRepository(ITaskRepository):
             logging.warning(f"Tasks do not exist")
             return
 
-        for task in tasks.scalars():
+        list_tasks = tasks.scalars().all()
+
+        if not list_tasks:
+            logging.info("No tasks in db")
+            return []
+
+        for task in list_tasks:
             result.append(
                 TaskEntity(
                     task_id=task.task_id,
@@ -93,6 +94,7 @@ class TaskRepository(ITaskRepository):
         async_session.add(new_task)
         await async_session.commit()
         await async_session.refresh(new_task)
+        logging.info(f"Task with id {new_task.task_id} created")
         return new_task.task_id
 
     async def update_task_by_id(self,
@@ -113,6 +115,7 @@ class TaskRepository(ITaskRepository):
         await async_session.commit()
         updated_task_id_scalar = updated_task_id.scalar()
 
+        logging.info(f"Task with id {updated_task_id_scalar} created")
         return updated_task_id_scalar
 
     async def remove_task_by_id(self, async_session: AsyncSession, task_id: int) -> int | None:
@@ -125,5 +128,5 @@ class TaskRepository(ITaskRepository):
 
         await async_session.commit()
         removed_task_id_scalar = removed_task_id.scalar()
-
+        logging.info(f"Task with id {removed_task_id_scalar} removed")
         return removed_task_id_scalar
