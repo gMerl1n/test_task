@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+
+  web:
+    build: .
+    container_name: test
+    command: ['./start.sh']
+    volumes:
+      - ./task_db.sqlite3:/test_task/task_db.sqlite3
+    ports:
+      - "11004:11004"
