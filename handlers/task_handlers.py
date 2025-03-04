@@ -79,4 +79,4 @@ async def remove_task_by_id(task_id: int,
     if removed_task_id is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
 
-    return JSONResponse(content={}, status_code=status.HTTP_204_NO_CONTENT)
+    return JSONResponse(content={}, status_code=status.HTTP_200_OK)
