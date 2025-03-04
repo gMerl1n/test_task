@@ -67,7 +67,7 @@ async def update_task_by_id(task_id: int,
     return updated_task
 
 
-@router_tasks.delete("/")
+@router_tasks.delete("/{task_id}")
 async def remove_task_by_id(task_id: int,
                             task_service: ITaskServices = Depends(di_container.get_task_service),
                             async_session: AsyncSession = Depends(get_async_session)):
@@ -77,4 +77,4 @@ async def remove_task_by_id(task_id: int,
     if removed_task_id is None:
         raise HTTPException(status_code=404, detail="Not found")
 
-    return JSONResponse(content=removed_task_id, status_code=200)
+    return JSONResponse(content={}, status_code=200)
