@@ -103,4 +103,14 @@ class TaskRepository(ITaskRepository):
 
 
     async def remove_task_by_id(self, async_session: AsyncSession, task_id: int) -> int | None:
-        pass
+
+        query = delete(Task).where(Task.task_id == task_id).returning(Task.task_id)
+        removed_task_id = await async_session.execute(query)
+        if removed_task_id is None:
+            logging.warning(f"Task with task id {task_id} or task id {task_id} do not exist. Impossible to remove")
+            return
+
+        await async_session.commit()
+        removed_task_id_scalar = removed_task_id.scalar()
+
+        return removed_task_id_scalar

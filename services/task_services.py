@@ -71,4 +71,7 @@ class TaskService(ITaskServices):
         pass
 
     async def remove_task_by_id(self, async_session: AsyncSession, task_id: int) -> int | None:
-        pass
+
+        removed_task_id = await self.__task_repo.remove_task_by_id(async_session=async_session,
+                                                                   task_id=task_id)
+        return removed_task_id

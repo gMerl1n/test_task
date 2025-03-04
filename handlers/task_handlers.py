@@ -48,3 +48,16 @@ async def get_all_tasks(task_service: ITaskServices = Depends(di_container.get_t
         raise HTTPException(status_code=404, detail="Tasks have not been found")
 
     return tasks
+
+
+@router_tasks.delete("/")
+async def remove_task_by_id(task_id: int,
+                            task_service: ITaskServices = Depends(di_container.get_task_service),
+                            async_session: AsyncSession = Depends(get_async_session)):
+
+    removed_task_id = await task_service.remove_task_by_id(async_session=async_session, task_id=task_id)
+
+    if removed_task_id is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    return JSONResponse(content=removed_task_id, status_code=200)
