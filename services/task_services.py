@@ -19,7 +19,7 @@ class ITaskServices(ABC):
         raise NotImplemented
 
     @abstractmethod
-    async def create_task(self, async_session: AsyncSession, title: str, description: str) -> int:
+    async def create_task(self, async_session: AsyncSession, title: str, description: str) -> int | None:
         raise NotImplemented
 
     @abstractmethod
@@ -42,14 +42,14 @@ class TaskService(ITaskServices):
 
     async def get_task_by_id(self, async_session: AsyncSession, task_id: int) -> TaskEntity | None:
         task = await self.__task_repo.get_task_by_id(async_session=async_session,
-                                                                 task_id=task_id)
+                                                     task_id=task_id)
         return task
 
     async def get_all_tasks(self, async_session: AsyncSession) -> list[TaskEntity] | None:
         tasks = await self.__task_repo.get_all_tasks(async_session=async_session)
         return tasks
 
-    async def create_task(self, async_session: AsyncSession, title: str, description: str) -> int:
+    async def create_task(self, async_session: AsyncSession, title: str, description: str) -> int | None:
 
         moscow_tz = tz('Europe/Moscow')
 
@@ -62,12 +62,13 @@ class TaskService(ITaskServices):
             )
 
         except InvalidTaskTitleField as ex:
-            logging.warning(f"Failed to create a new task. Invalit title filed: {ex}")
+            logging.warning(f"Failed to create a new task. Invalid title field: {ex}")
             return
 
-        new_task_id = await self.__task_repo.create_task(async_session=async_session,
-                                                         task=new_task)
-        return new_task_id
+        else:
+            new_task_id = await self.__task_repo.create_task(async_session=async_session,
+                                                             task=new_task)
+            return new_task_id
 
     async def update_task_by_id(self,
                                 async_session: AsyncSession,

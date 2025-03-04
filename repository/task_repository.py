@@ -11,10 +11,11 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+
 class ITaskRepository(ABC):
 
     @abstractmethod
-    async def get_task_by_id(self, async_session: AsyncSession, task_id: int):
+    async def get_task_by_id(self, async_session: AsyncSession, task_id: int) -> TaskEntity | None:
         raise NotImplemented
 
     @abstractmethod
@@ -22,7 +23,7 @@ class ITaskRepository(ABC):
         raise NotImplemented
 
     @abstractmethod
-    async def create_task(self, async_session: AsyncSession, task: TaskEntity):
+    async def create_task(self, async_session: AsyncSession, task: TaskEntity) -> int:
         raise NotImplemented
 
     @abstractmethod
@@ -86,7 +87,7 @@ class TaskRepository(ITaskRepository):
 
         return result
 
-    async def create_task(self, async_session: AsyncSession, task: TaskEntity):
+    async def create_task(self, async_session: AsyncSession, task: TaskEntity) -> int:
 
         new_task = Task.to_task_model(task)
         async_session.add(new_task)
@@ -113,7 +114,6 @@ class TaskRepository(ITaskRepository):
         updated_task_id_scalar = updated_task_id.scalar()
 
         return updated_task_id_scalar
-
 
     async def remove_task_by_id(self, async_session: AsyncSession, task_id: int) -> int | None:
 
